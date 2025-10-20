@@ -19,23 +19,58 @@ A comprehensive Python toolkit for downloading, processing, and converting Kindl
 
 ## Installation
 
+### Recommended: Using uv (Isolated Environment)
+
 1. Clone the repository:
 ```bash
 git clone <repository-url>
 cd kindle-book-toolkit
 ```
 
-2. Install required dependencies:
+2. Install uv if you haven't already:
 ```bash
-pip install pillow cairosvg imagehash svgpathtools fonttools scikit-image tqdm ebooklib requests
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-3. Set up authentication by copying the example headers file:
+3. Create and activate a virtual environment with dependencies:
+```bash
+uv venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+uv pip install pillow cairosvg imagehash svgpathtools fonttools scikit-image tqdm ebooklib requests
+```
+
+4. Set up authentication by copying the example headers file:
 ```bash
 cp headers.example.json headers.json
 ```
 
-4. Edit `headers.json` with your Kindle Cloud Reader session data (see Configuration section).
+5. Edit `headers.json` with your Kindle Cloud Reader session data (see Configuration section).
+
+### Alternative: Using pip
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd kindle-book-toolkit
+```
+
+2. Create a virtual environment (recommended):
+```bash
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+3. Install required dependencies:
+```bash
+pip install pillow cairosvg imagehash svgpathtools fonttools scikit-image tqdm ebooklib requests
+```
+
+4. Set up authentication by copying the example headers file:
+```bash
+cp headers.example.json headers.json
+```
+
+5. Edit `headers.json` with your Kindle Cloud Reader session data (see Configuration section).
 
 ## Quick Start
 
@@ -309,6 +344,10 @@ decoded_book.epub               # Generated EPUB file
 
 **"Missing dependencies"**
 ```bash
+# With uv:
+uv pip install pillow cairosvg imagehash svgpathtools fonttools scikit-image tqdm
+
+# With pip:
 pip install pillow cairosvg imagehash svgpathtools fonttools scikit-image tqdm
 ```
 
@@ -330,6 +369,10 @@ pip install pillow cairosvg imagehash svgpathtools fonttools scikit-image tqdm
 
 **"Missing ebooklib"**
 ```bash
+# With uv:
+uv pip install ebooklib
+
+# With pip:
 pip install ebooklib
 ```
 
@@ -344,6 +387,12 @@ pip install ebooklib
 
 ### Required Python Packages
 
+**With uv (recommended):**
+```bash
+uv pip install pillow cairosvg imagehash svgpathtools fonttools scikit-image tqdm ebooklib requests
+```
+
+**With pip:**
 ```bash
 pip install pillow cairosvg imagehash svgpathtools fonttools scikit-image tqdm ebooklib requests
 ```
@@ -380,6 +429,11 @@ We welcome contributions! Please follow these guidelines:
 1. Fork the repository
 2. Create a virtual environment:
 ```bash
+# With uv (recommended):
+uv venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# With pip:
 python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
