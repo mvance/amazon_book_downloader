@@ -22,7 +22,6 @@ import shutil
 import time
 from pathlib import Path
 import argparse
-import yaml
 from datetime import datetime
 
 
@@ -304,8 +303,40 @@ class BatchProcessor:
         print(f"\nDetailed report saved to: {report_file}")
 
 
+def parse_simple_config(file_path):
+    """Parse simple key-value configuration file"""
+    config = {}
+    with open(file_path) as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
+            if '=' in line:
+                key, value = line.split('=', 1)
+                key = key.strip()
+                value = value.strip()
+                
+                # Convert types
+                if value.lower() == 'true':
+                    value = True
+                elif value.lower() == 'false':
+                    value = False
+                elif value.isdigit():
+                    value = int(value)
+                
+                # Build nested dict
+                keys = key.split('.')
+                current = config
+                for k in keys[:-1]:
+                    if k not in current:
+                        current[k] = {}
+                    current = current[k]
+                current[keys[-1]] = value
+    return config
+
+
 def load_config(config_file=None):
-    """Load configuration from YAML file with defaults"""
+    """Load configuration from simple key-value file with defaults"""
     default_config = {
         'pipeline': {
             'download': {
@@ -335,15 +366,15 @@ def load_config(config_file=None):
         },
         'logging': {
             'level': 'INFO',
-            'save_logs': True
+            'save_logs': True,
+            'log_file': 'kindle_processor.log'
         }
     }
     
     # Load custom config if provided
     if config_file and Path(config_file).exists():
         print(f"Loading configuration from: {config_file}")
-        with open(config_file) as f:
-            custom_config = yaml.safe_load(f)
+        custom_config = parse_simple_config(config_file)
             
         # Merge custom config with defaults
         def merge_dicts(default, custom):
@@ -403,7 +434,7 @@ Examples:
   python3 kindle_conversion_wrapper.py B0FLBTR2FS
   
   # Process with custom config
-  python3 kindle_conversion_wrapper.py B0FLBTR2FS --config my_config.yaml
+  python3 kindle_conversion_wrapper.py B0FLBTR2FS --config my_config.txt
   
   # Fast mode with auto-confirm
   python3 kindle_conversion_wrapper.py B0FLBTR2FS --fast --yes
@@ -420,7 +451,7 @@ Examples:
     parser.add_argument('asin', nargs='?', help='Book ASIN to process')
     
     # Configuration
-    parser.add_argument('--config', help='YAML configuration file')
+    parser.add_argument('--config', help='Configuration file (simple key-value format)')
     
     # Processing modes (override config)
     mode_group = parser.add_mutually_exclusive_group()

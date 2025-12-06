@@ -89,7 +89,7 @@ python3 kindle_conversion_wrapper.py B0FLBTR2FS --fast --yes
 python3 kindle_conversion_wrapper.py --batch book_list_example.txt
 
 # Custom configuration
-python3 kindle_conversion_wrapper.py B0FLBTR2FS --config config.yaml
+python3 kindle_conversion_wrapper.py B0FLBTR2FS --config config.txt
 ```
 
 ### Option 2: Manual Step-by-Step Process
@@ -167,7 +167,7 @@ python3 kindle_conversion_wrapper.py B0FLBTR2FS --output-name "My Book - {asin}.
 python3 kindle_conversion_wrapper.py --batch my_books.txt
 
 # Use custom configuration
-python3 kindle_conversion_wrapper.py B0FLBTR2FS --config fast_config.yaml
+python3 kindle_conversion_wrapper.py B0FLBTR2FS --config fast_config.txt
 
 # Skip download (if already downloaded)
 python3 kindle_conversion_wrapper.py B0FLBTR2FS --skip-download --progressive
@@ -178,38 +178,41 @@ python3 kindle_conversion_wrapper.py B0FLBTR2FS --skip-download --skip-decode
 
 ### Configuration Files
 
-The wrapper script supports YAML configuration files for easy customization:
+The wrapper script supports simple key-value configuration files for easy customization:
 
-**Default config.yaml:**
-```yaml
-pipeline:
-  download:
-    enabled: true
-    auto_confirm: false
-  decode:
-    enabled: true
-    mode: progressive  # fast, full, progressive
-  epub:
-    enabled: true
-    output_name: "auto"  # or "Custom Name - {asin}.epub"
+**Default config.txt:**
+```
+# Pipeline settings - Download
+pipeline.download.enabled = true
+pipeline.download.auto_confirm = false
 
-paths:
-  downloads: "downloads"
-  fonts: "fonts"
-  output: "output"
+# Pipeline settings - Decode
+pipeline.decode.enabled = true
+pipeline.decode.mode = progressive
 
-batch:
-  continue_on_error: true
+# Pipeline settings - EPUB
+pipeline.epub.enabled = true
+pipeline.epub.output_name = auto
+
+# Path settings
+paths.downloads = downloads
+paths.fonts = fonts
+paths.output = output
+
+# Batch processing
+batch.continue_on_error = true
 ```
 
 **Custom configurations:**
 ```bash
 # Create custom config for fast processing
-cp config.yaml fast_config.yaml
-# Edit fast_config.yaml to set mode: fast and auto_confirm: true
+cp config.txt fast_config.txt
+# Edit fast_config.txt to set:
+# pipeline.decode.mode = fast
+# pipeline.download.auto_confirm = true
 
 # Use custom config
-python3 kindle_conversion_wrapper.py B0FLBTR2FS --config fast_config.yaml
+python3 kindle_conversion_wrapper.py B0FLBTR2FS --config fast_config.txt
 ```
 
 ### Batch Processing
@@ -545,7 +548,7 @@ pip install ebooklib
 python3 kindle_conversion_wrapper.py B0FLBTR2FS --fast --yes
 
 # If successful, process your library
-python3 kindle_conversion_wrapper.py --batch my_library.txt --config production.yaml
+python3 kindle_conversion_wrapper.py --batch my_library.txt --config production.txt
 ```
 
 **Incremental Processing:**
@@ -676,13 +679,10 @@ This project is provided for educational and research purposes. Users are respon
 - Ensure all Python scripts are in the same directory
 - Check that script names match exactly
 
-**"YAML configuration error"**
-```bash
-# Install PyYAML if missing
-pip install pyyaml
-# or with uv:
-uv pip install pyyaml
-```
+**"Configuration file error"**
+- Check config file syntax (key = value format)
+- Ensure no spaces around the = sign
+- Verify boolean values are lowercase (true/false)
 
 **"Batch processing fails"**
 - Check book list file format (one ASIN per line)
