@@ -137,7 +137,7 @@ python3 kindle_conversion_wrapper.py --batch <book_list_file> [options]
 **Basic Options:**
 - `ASIN`: Amazon book identifier (required for single book processing)
 - `--batch FILE`: Process multiple books from a text file
-- `--config FILE`: Use custom YAML configuration file
+- `--config FILE`: Use custom configuration file
 - `--yes`: Auto-confirm all prompts
 - `--output-name NAME`: Custom EPUB filename (use `{asin}` as placeholder)
 
@@ -524,7 +524,7 @@ pip install ebooklib
 - **Cleanup**: Automatically removes partial files on failure
 
 ### Configuration Management
-- **YAML Support**: Flexible configuration files with sensible defaults
+- **Simple Config Support**: Flexible configuration files with sensible defaults
 - **CLI Overrides**: Command line options override configuration settings
 - **Multiple Configs**: Support for different configuration profiles
 
