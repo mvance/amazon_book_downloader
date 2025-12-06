@@ -1,0 +1,51 @@
+# Kindle Conversion Wrapper Configuration
+# This file contains default settings for the conversion pipeline
+
+pipeline:
+  download:
+    enabled: true
+    pages_per_batch: 5
+    auto_confirm: false  # Set to true to skip download confirmation prompts
+    
+  decode:
+    enabled: true
+    mode: progressive  # Options: fast, full, progressive
+    early_exit: true
+    save_images: true
+    
+  epub:
+    enabled: true
+    output_name: "auto"  # "auto" or custom name like "My Book - {asin}.epub"
+    include_metadata: true
+
+paths:
+  downloads: "downloads"
+  fonts: "fonts"
+  output: "output"
+
+batch:
+  continue_on_error: true  # Continue processing other books if one fails
+  
+logging:
+  level: "INFO"
+  save_logs: true
+  log_file: "kindle_processor.log"
+
+# Example custom configurations:
+#
+# For fast processing:
+# pipeline:
+#   decode:
+#     mode: fast
+#   download:
+#     auto_confirm: true
+#
+# For custom output naming:
+# pipeline:
+#   epub:
+#     output_name: "Converted - {asin}.epub"
+#
+# For batch processing with custom paths:
+# paths:
+#   downloads: "/path/to/downloads"
+#   output: "/path/to/output"

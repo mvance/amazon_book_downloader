@@ -1,0 +1,9 @@
+# Example book list for batch processing
+# One ASIN per line, lines starting with # are ignored
+
+B0FLBTR2FS
+# B0ABCDEF12
+# B0GHIJKL34
+
+# Add your book ASINs here, one per line
+# You can comment out books with # to skip them temporarily
