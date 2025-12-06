@@ -161,7 +161,7 @@ python3 kindle_conversion_wrapper.py B0FLBTR2FS
 python3 kindle_conversion_wrapper.py B0FLBTR2FS --fast --yes
 
 # Custom output filename
-python3 kindle_conversion_wrapper.py B0FLBTR2FS --output-name "My Book - {asin}.epub"
+python3 kindle_conversion_wrapper.py B0FLBTR2FS --output-name "{title}_by_{author}.epub"
 
 # Process multiple books
 python3 kindle_conversion_wrapper.py --batch my_books.txt
