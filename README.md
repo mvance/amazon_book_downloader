@@ -563,7 +563,7 @@ python3 kindle_conversion_wrapper.py B0FLBTR2FS --skip-download
 **Custom Output Organization:**
 ```bash
 # Organized naming scheme
-python3 kindle_conversion_wrapper.py B0FLBTR2FS --output-name "Converted/{asin} - Book Title.epub"
+python3 kindle_conversion_wrapper.py B0FLBTR2FS --output-name "Converted/{title}-{author}.epub"
 ```
 
 ## Performance Tips

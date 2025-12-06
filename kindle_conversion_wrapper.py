@@ -179,27 +179,35 @@ class KindleProcessor:
         if not epub_file.exists():
             raise Exception("EPUB creation failed - output file not found")
             
-        # Get book title from metadata for naming
+        # Get book title and author from metadata for naming
         metadata_file = self.book_dir / 'batch_0' / 'metadata.json'
         if metadata_file.exists():
             with open(metadata_file) as f:
                 metadata = json.load(f)
             book_title = metadata.get('bookTitle', self.asin)
-            # Clean title for filename (remove invalid characters)
+            authors = metadata.get('authors', [])
+            book_author = authors[0] if authors else 'Unknown'
+            
+            # Clean title and author for filename (remove invalid characters)
             import re
             clean_title = re.sub(r'[<>:"/\\|?*]', '', book_title)
             clean_title = clean_title.strip()
+            clean_author = re.sub(r'[<>:"/\\|?*]', '', book_author)
+            clean_author = clean_author.strip()
         else:
             clean_title = self.asin
+            clean_author = 'Unknown'
         
         # Rename EPUB based on config
         output_name = self.config['pipeline']['epub']['output_name']
         if output_name == "auto":
-            # Use title automatically
-            custom_name = f"{clean_title}.epub"
+            # Use title-author format in lowercase with underscores
+            title_part = clean_title.lower().replace(' ', '_')
+            author_part = clean_author.lower().replace(' ', '_')
+            custom_name = f"{title_part}-{author_part}.epub"
         else:
             # Use configured name with placeholders
-            custom_name = output_name.replace("{asin}", self.asin).replace("{title}", clean_title)
+            custom_name = output_name.replace("{asin}", self.asin).replace("{title}", clean_title).replace("{author}", clean_author)
             if not custom_name.endswith('.epub'):
                 custom_name += '.epub'
         

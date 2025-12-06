@@ -18,10 +18,11 @@ pipeline.epub.output_name = auto
 pipeline.epub.include_metadata = true
 
 # EPUB naming options:
-# auto = use book title automatically
+# auto = use title-author format (lowercase with underscores)
 # {title} = book title placeholder
+# {author} = book author placeholder
 # {asin} = book ASIN placeholder
-# Example: pipeline.epub.output_name = {title} - {asin}.epub
+# Example: pipeline.epub.output_name = {title}_by_{author}.epub
 
 # Path settings
 paths.downloads = downloads
