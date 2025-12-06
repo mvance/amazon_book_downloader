@@ -192,8 +192,15 @@ class KindleProcessor:
             import re
             clean_title = re.sub(r'[<>:"/\\|?*]', '', book_title)
             clean_title = clean_title.strip()
+            
+            # Handle author name - reverse "Last, First" to "First Last" format
             clean_author = re.sub(r'[<>:"/\\|?*]', '', book_author)
             clean_author = clean_author.strip()
+            if ',' in clean_author:
+                # Split on comma and reverse order
+                parts = [part.strip() for part in clean_author.split(',', 1)]
+                if len(parts) == 2:
+                    clean_author = f"{parts[1]} {parts[0]}"
         else:
             clean_title = self.asin
             clean_author = 'Unknown'
