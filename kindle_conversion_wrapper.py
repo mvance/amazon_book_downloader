@@ -179,17 +179,33 @@ class KindleProcessor:
         if not epub_file.exists():
             raise Exception("EPUB creation failed - output file not found")
             
-        # Rename EPUB if custom name requested
+        # Get book title from metadata for naming
+        metadata_file = self.book_dir / 'batch_0' / 'metadata.json'
+        if metadata_file.exists():
+            with open(metadata_file) as f:
+                metadata = json.load(f)
+            book_title = metadata.get('bookTitle', self.asin)
+            # Clean title for filename (remove invalid characters)
+            import re
+            clean_title = re.sub(r'[<>:"/\\|?*]', '', book_title)
+            clean_title = clean_title.strip()
+        else:
+            clean_title = self.asin
+        
+        # Rename EPUB based on config
         output_name = self.config['pipeline']['epub']['output_name']
-        if output_name != "auto":
-            custom_name = output_name.replace("{asin}", self.asin)
+        if output_name == "auto":
+            # Use title automatically
+            custom_name = f"{clean_title}.epub"
+        else:
+            # Use configured name with placeholders
+            custom_name = output_name.replace("{asin}", self.asin).replace("{title}", clean_title)
             if not custom_name.endswith('.epub'):
                 custom_name += '.epub'
-            custom_path = Path(custom_name)
-            epub_file.rename(custom_path)
-            print(f"✓ EPUB renamed to: {custom_path}")
-        else:
-            print(f"✓ EPUB created: {epub_file}")
+        
+        custom_path = Path(custom_name)
+        epub_file.rename(custom_path)
+        print(f"✓ EPUB created: {custom_path}")
             
     def cleanup_on_failure(self):
         """Clean up partial files on failure"""
@@ -352,7 +368,7 @@ def load_config(config_file=None):
             },
             'epub': {
                 'enabled': True,
-                'output_name': 'auto',  # auto, or custom name with {asin} placeholder
+                'output_name': 'auto',  # auto, or custom name with {asin} and {title} placeholders
                 'include_metadata': True
             }
         },
