@@ -74,7 +74,29 @@ cp headers.example.json headers.json
 
 ## Quick Start
 
-### 1. Download a Complete Book
+### Option 1: Using the Wrapper Script (Recommended)
+
+The easiest way to process Kindle books is using the all-in-one wrapper script:
+
+```bash
+# Process a single book with default settings
+python3 kindle_conversion_wrapper.py B0FLBTR2FS
+
+# Fast mode with auto-confirmation
+python3 kindle_conversion_wrapper.py B0FLBTR2FS --fast --yes
+
+# Process multiple books from a list
+python3 kindle_conversion_wrapper.py --batch book_list_example.txt
+
+# Custom configuration
+python3 kindle_conversion_wrapper.py B0FLBTR2FS --config config.yaml
+```
+
+### Option 2: Manual Step-by-Step Process
+
+For more control or troubleshooting, you can run each step manually:
+
+#### 1. Download a Complete Book
 
 ```bash
 # Download entire book (interactive)
@@ -84,7 +106,7 @@ python3 download_full_book.py B0FLBTR2FS
 python3 download_full_book.py B0FLBTR2FS --yes
 ```
 
-### 2. Process and Decode Glyphs
+#### 2. Process and Decode Glyphs
 
 ```bash
 # Complete glyph processing pipeline
@@ -94,16 +116,130 @@ python3 decode_glyphs_complete.py downloads/B0FLBTR2FS
 python3 decode_glyphs_complete.py downloads/B0FLBTR2FS --fast --progressive
 ```
 
-### 3. Create EPUB
+#### 3. Create EPUB
 
 ```bash
 # Convert to EPUB format
 python3 create_epub.py downloads/B0FLBTR2FS
 ```
 
+## Wrapper Script Usage
+
+### `kindle_conversion_wrapper.py` (Recommended)
+
+The wrapper script orchestrates the entire pipeline and provides the easiest way to convert Kindle books.
+
+```bash
+python3 kindle_conversion_wrapper.py <ASIN> [options]
+python3 kindle_conversion_wrapper.py --batch <book_list_file> [options]
+```
+
+**Basic Options:**
+- `ASIN`: Amazon book identifier (required for single book processing)
+- `--batch FILE`: Process multiple books from a text file
+- `--config FILE`: Use custom YAML configuration file
+- `--yes`: Auto-confirm all prompts
+- `--output-name NAME`: Custom EPUB filename (use `{asin}` as placeholder)
+
+**Processing Modes:**
+- `--fast`: Fast decoding mode (early exit on good matches)
+- `--full`: Full character set mode (check all font characters)
+- `--progressive`: Progressive mode with multi-stage filtering (default)
+
+**Step Control:**
+- `--skip-download`: Skip download step (use existing data)
+- `--skip-decode`: Skip glyph decoding step
+- `--skip-epub`: Skip EPUB creation step
+
+**Examples:**
+
+```bash
+# Basic single book processing
+python3 kindle_conversion_wrapper.py B0FLBTR2FS
+
+# Fast mode with auto-confirm
+python3 kindle_conversion_wrapper.py B0FLBTR2FS --fast --yes
+
+# Custom output filename
+python3 kindle_conversion_wrapper.py B0FLBTR2FS --output-name "My Book - {asin}.epub"
+
+# Process multiple books
+python3 kindle_conversion_wrapper.py --batch my_books.txt
+
+# Use custom configuration
+python3 kindle_conversion_wrapper.py B0FLBTR2FS --config fast_config.yaml
+
+# Skip download (if already downloaded)
+python3 kindle_conversion_wrapper.py B0FLBTR2FS --skip-download --progressive
+
+# Process with specific steps only
+python3 kindle_conversion_wrapper.py B0FLBTR2FS --skip-download --skip-decode
+```
+
+### Configuration Files
+
+The wrapper script supports YAML configuration files for easy customization:
+
+**Default config.yaml:**
+```yaml
+pipeline:
+  download:
+    enabled: true
+    auto_confirm: false
+  decode:
+    enabled: true
+    mode: progressive  # fast, full, progressive
+  epub:
+    enabled: true
+    output_name: "auto"  # or "Custom Name - {asin}.epub"
+
+paths:
+  downloads: "downloads"
+  fonts: "fonts"
+  output: "output"
+
+batch:
+  continue_on_error: true
+```
+
+**Custom configurations:**
+```bash
+# Create custom config for fast processing
+cp config.yaml fast_config.yaml
+# Edit fast_config.yaml to set mode: fast and auto_confirm: true
+
+# Use custom config
+python3 kindle_conversion_wrapper.py B0FLBTR2FS --config fast_config.yaml
+```
+
+### Batch Processing
+
+Create a text file with one ASIN per line:
+
+**book_list.txt:**
+```
+B0FLBTR2FS
+B0ABCDEF12
+B0GHIJKL34
+# Lines starting with # are ignored
+```
+
+**Process the batch:**
+```bash
+python3 kindle_conversion_wrapper.py --batch book_list.txt
+```
+
+The wrapper will:
+- Process each book sequentially
+- Continue with remaining books if one fails (configurable)
+- Generate a detailed batch report
+- Save individual EPUBs for each successful book
+
 ## Detailed Usage
 
-### Command Line Tools
+### Individual Command Line Tools
+
+For advanced users or troubleshooting, you can run each component separately:
 
 #### `download_full_book.py`
 Downloads complete books in 5-page batches to ensure consistent font encoding.
@@ -376,12 +512,65 @@ uv pip install ebooklib
 pip install ebooklib
 ```
 
+## Wrapper Script Features
+
+### Pipeline Orchestration
+- **Sequential Processing**: Automatically runs download → decode → EPUB creation
+- **Error Handling**: Stops on failures with detailed error messages
+- **Progress Tracking**: Shows step-by-step progress with timing information
+- **Cleanup**: Automatically removes partial files on failure
+
+### Configuration Management
+- **YAML Support**: Flexible configuration files with sensible defaults
+- **CLI Overrides**: Command line options override configuration settings
+- **Multiple Configs**: Support for different configuration profiles
+
+### Batch Processing
+- **Multiple Books**: Process entire libraries from text file lists
+- **Error Recovery**: Continue processing remaining books if one fails
+- **Batch Reports**: Detailed success/failure reports with timestamps
+- **Progress Tracking**: Shows current book progress in batch
+
+### Advanced Features
+- **Step Control**: Skip individual pipeline steps as needed
+- **Custom Naming**: Flexible EPUB output naming with ASIN placeholders
+- **Prerequisites Check**: Validates environment before processing
+- **Comprehensive Logging**: Detailed output for troubleshooting
+
+### Workflow Examples
+
+**Development/Testing Workflow:**
+```bash
+# Test with a single book first
+python3 kindle_conversion_wrapper.py B0FLBTR2FS --fast --yes
+
+# If successful, process your library
+python3 kindle_conversion_wrapper.py --batch my_library.txt --config production.yaml
+```
+
+**Incremental Processing:**
+```bash
+# Download only (for later processing)
+python3 kindle_conversion_wrapper.py B0FLBTR2FS --skip-decode --skip-epub
+
+# Process existing download
+python3 kindle_conversion_wrapper.py B0FLBTR2FS --skip-download
+```
+
+**Custom Output Organization:**
+```bash
+# Organized naming scheme
+python3 kindle_conversion_wrapper.py B0FLBTR2FS --output-name "Converted/{asin} - Book Title.epub"
+```
+
 ## Performance Tips
 
 1. **Use Progressive Mode**: `--progressive` provides better accuracy with reasonable speed
 2. **Parallel Processing**: The toolkit automatically uses all CPU cores
 3. **Disk Space**: Ensure sufficient space (books can be 100MB+ when processed)
 4. **Memory Usage**: Large books may require 4GB+ RAM during processing
+5. **Batch Processing**: Use wrapper script for multiple books to avoid repeated setup overhead
+6. **Configuration Files**: Create optimized configs for different use cases (fast vs. accurate)
 
 ## Dependencies
 
@@ -389,13 +578,15 @@ pip install ebooklib
 
 **With uv (recommended):**
 ```bash
-uv pip install pillow cairosvg imagehash svgpathtools fonttools scikit-image tqdm ebooklib requests
+uv pip install pillow cairosvg imagehash svgpathtools fonttools scikit-image tqdm ebooklib requests pyyaml
 ```
 
 **With pip:**
 ```bash
-pip install pillow cairosvg imagehash svgpathtools fonttools scikit-image tqdm ebooklib requests
+pip install pillow cairosvg imagehash svgpathtools fonttools scikit-image tqdm ebooklib requests pyyaml
 ```
+
+**Note:** The wrapper script requires `pyyaml` for configuration file support.
 
 ### System Requirements
 
@@ -470,12 +661,38 @@ This project is provided for educational and research purposes. Users are respon
    - Complete error messages
    - Steps to reproduce the problem
    - Sample ASIN (if not sensitive)
+   - Whether using wrapper script or individual tools
 
 ### Common Solutions
 
 - **Authentication**: Most issues stem from expired or incorrect session data
 - **Dependencies**: Ensure all required packages are installed with correct versions
 - **Permissions**: Check file/directory permissions if seeing access errors
+- **Wrapper Issues**: Try running individual scripts manually to isolate problems
+
+### Wrapper Script Troubleshooting
+
+**"Required script not found"**
+- Ensure all Python scripts are in the same directory
+- Check that script names match exactly
+
+**"YAML configuration error"**
+```bash
+# Install PyYAML if missing
+pip install pyyaml
+# or with uv:
+uv pip install pyyaml
+```
+
+**"Batch processing fails"**
+- Check book list file format (one ASIN per line)
+- Verify ASINs are valid
+- Use `--config` with `continue_on_error: true` to process remaining books
+
+**"Pipeline step fails"**
+- Use individual scripts to isolate the problem
+- Check prerequisites for each step
+- Review error messages for specific issues
 
 ---
 
