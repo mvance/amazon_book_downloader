@@ -581,15 +581,15 @@ python3 kindle_conversion_wrapper.py B0FLBTR2FS --output-name "Converted/{asin} 
 
 **With uv (recommended):**
 ```bash
-uv pip install pillow cairosvg imagehash svgpathtools fonttools scikit-image tqdm ebooklib requests pyyaml
+uv pip install pillow cairosvg imagehash svgpathtools fonttools scikit-image tqdm ebooklib requests
 ```
 
 **With pip:**
 ```bash
-pip install pillow cairosvg imagehash svgpathtools fonttools scikit-image tqdm ebooklib requests pyyaml
+pip install pillow cairosvg imagehash svgpathtools fonttools scikit-image tqdm ebooklib requests
 ```
 
-**Note:** The wrapper script requires `pyyaml` for configuration file support.
+**Note:** The wrapper script uses a simple key-value configuration format with no additional dependencies.
 
 ### System Requirements
 
